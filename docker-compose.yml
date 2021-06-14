@@ -1,0 +1,22 @@
+services:
+    hello-world-app:
+        image: hello-world-svc
+        build:
+            context: ./hello-world-svc
+            dockerfile: ./Dockerfile
+        ports:
+            - 8080:8080
+    hello-app:
+        image: hello-svc
+        build:
+            context: ./hello-svc
+            dockerfile: ./Dockerfile
+        expose:
+            - 8080
+    world-app:
+        image: world-svc
+        build:
+            context: ./world-svc
+            dockerfile: ./Dockerfile
+        expose:
+            - 8080
