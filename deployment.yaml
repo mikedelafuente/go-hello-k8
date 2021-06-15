@@ -49,21 +49,19 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: world-svc
-  labels:
-    app: world-svc
+  name: world-svc-deployment
 spec:
   selector:
     matchLabels:
-      app: world-svc
+      app: world-svc-template
   replicas: 2
   template:
     metadata:
       labels:
-        app: world-svc
+        app: world-svc-template
     spec:
       containers:
-      - name: world-svc
+      - name: world-svc-pod
         image: world-svc
         imagePullPolicy: "IfNotPresent"
         ports:
@@ -82,7 +80,7 @@ metadata:
   name: world-app
 spec:
   selector:
-    app: world-svc
+    app: world-svc-template
   ports:
     - protocol: TCP
       port: 8080
@@ -93,21 +91,19 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hello-world-svc
-  labels:
-    app: hello-world-svc
+  name: hello-world-svc-deployment
 spec:
   selector:
     matchLabels:
-      app: hello-world-svc
+      app: hello-world-svc-template
   replicas: 2
   template:
     metadata:
       labels:
-        app: hello-world-svc
+        app: hello-world-svc-template
     spec:
       containers:
-      - name: hello-world-svc
+      - name: hello-world-svc-pod
         image: hello-world-svc
         imagePullPolicy: "IfNotPresent"
         ports:
@@ -123,10 +119,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: hello-world-svc
+  name: hello-world-app
 spec:
   selector:
-    app: hello-world-svc
+    app: hello-world-svc-template
   ports:
     - protocol: TCP
       port: 8080
