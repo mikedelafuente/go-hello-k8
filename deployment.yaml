@@ -1,0 +1,133 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-svc-deployment
+  labels:
+    app: hello-svc
+spec:
+  selector:
+    matchLabels:
+      app: hello-svc
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: hello-svc
+    spec:
+      containers:
+      - name: hello-svc-pod
+        image: hello-svc
+        imagePullPolicy: "IfNotPresent"
+        ports:
+        - containerPort: 8080 
+        resources:
+          limits:
+            memory: 256Mi
+            cpu: "250m"
+          requests:
+            memory: 128Mi
+            cpu: "80m"     
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-app #NAME OF THE APP AS REFFERRED BY THE INTERIOR LINKS
+spec:
+  selector:
+    app: hello-svc
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: NodePort
+
+
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: world-svc
+  labels:
+    app: world-svc
+spec:
+  selector:
+    matchLabels:
+      app: world-svc
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: world-svc
+    spec:
+      containers:
+      - name: world-svc
+        image: world-svc
+        imagePullPolicy: "IfNotPresent"
+        ports:
+        - containerPort: 8080 
+        resources:
+          limits:
+            memory: 256Mi
+            cpu: "250m"
+          requests:
+            memory: 128Mi
+            cpu: "80m"     
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: world-app
+spec:
+  selector:
+    app: world-svc
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: NodePort
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-world-svc
+  labels:
+    app: hello-world-svc
+spec:
+  selector:
+    matchLabels:
+      app: hello-world-svc
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: hello-world-svc
+    spec:
+      containers:
+      - name: hello-world-svc
+        image: hello-world-svc
+        imagePullPolicy: "IfNotPresent"
+        ports:
+        - containerPort: 8080 
+        resources:
+          limits:
+            memory: 256Mi
+            cpu: "250m"
+          requests:
+            memory: 128Mi
+            cpu: "80m"     
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-world-svc
+spec:
+  selector:
+    app: hello-world-svc
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: NodePort
