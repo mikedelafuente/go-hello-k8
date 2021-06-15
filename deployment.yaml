@@ -2,17 +2,17 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hello-svc-deployment
-  labels:
-    app: hello-svc
 spec:
   selector:
     matchLabels:
-      app: hello-svc
+      environment: prod
+      app: hello-svc-template      
   replicas: 2
   template:
     metadata:
       labels:
-        app: hello-svc
+        environment: prod
+        app: hello-svc-template
     spec:
       containers:
       - name: hello-svc-pod
@@ -26,7 +26,8 @@ spec:
             cpu: "250m"
           requests:
             memory: 128Mi
-            cpu: "80m"     
+            cpu: "80m"
+  
 ---
 apiVersion: v1
 kind: Service
@@ -34,7 +35,7 @@ metadata:
   name: hello-app #NAME OF THE APP AS REFFERRED BY THE INTERIOR LINKS
 spec:
   selector:
-    app: hello-svc
+    app: hello-svc-template
   ports:
     - protocol: TCP
       port: 8080
