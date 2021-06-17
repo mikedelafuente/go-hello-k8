@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: hello-svc-pod
-        image: gcr.io/mike-delafuente-sandbox/hello-world/hello-svc
+        image: hello-svc
         imagePullPolicy: "IfNotPresent"
         ports:
         - containerPort: 8080 
@@ -62,7 +62,7 @@ spec:
     spec:
       containers:
       - name: world-svc-pod
-        image: gcr.io/mike-delafuente-sandbox/hello-world/world-svc
+        image: world-svc
         imagePullPolicy: "IfNotPresent"
         ports:
         - containerPort: 8080 
@@ -104,7 +104,7 @@ spec:
     spec:
       containers:
       - name: hello-world-svc-pod
-        image: gcr.io/mike-delafuente-sandbox/hello-world/hello-world-svc
+        image: hello-world-svc
         imagePullPolicy: "IfNotPresent"
         ports:
         - containerPort: 8080 
