@@ -3,13 +3,21 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
 	http.HandleFunc("/static", StaticServer)
 	http.HandleFunc("/", HelloWorldServer)
-	http.ListenAndServe(":8080", nil)
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	log.Printf("hello-world-svc: listening on port %s", port)
+	http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
 }
 
 func StaticServer(w http.ResponseWriter, r *http.Request) {
@@ -18,8 +26,18 @@ func StaticServer(w http.ResponseWriter, r *http.Request) {
 
 func HelloWorldServer(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "Dynamic path... \n\n")
-	callServer(w, "http://hello-app:8080")
-	callServer(w, "http://world-app:8080")
+	helloserver := os.Getenv("HELLOSERVER")
+	if helloserver == "" {
+		helloserver = "http://hello-app:8080"
+	}
+
+	worldserver := os.Getenv("WORLDSERVER")
+	if worldserver == "" {
+		worldserver = "http://world-app:8080"
+	}
+
+	callServer(w, helloserver)
+	callServer(w, worldserver)
 }
 
 func callServer(w http.ResponseWriter, serverName string) {
