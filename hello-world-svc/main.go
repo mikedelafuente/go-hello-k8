@@ -37,46 +37,51 @@ func HelloWorldServer(w http.ResponseWriter, r *http.Request) {
 	if worldserver == "" {
 		worldserver = "http://world-app:8080"
 	}
-
+	fmt.Fprint(w, "\nSecure calls:\n")
 	callServerWithAuth(w, helloserver)
 	callServerWithAuth(w, worldserver)
+
+	fmt.Fprint(w, "\nUnsecure calls:\n")
+
+	callServer(w, helloserver)
+	callServer(w, worldserver)
 }
 
-// func callServer(w http.ResponseWriter, serverName string) {
-// 	fmt.Fprintf(w, "Calling : %v\n", serverName)
-// 	response, err := http.Get(serverName)
-// 	if err != nil {
-// 		fmt.Fprintf(w, "The HTTP request failed with error %s\n", err)
-// 	} else {
-// 		data, _ := ioutil.ReadAll(response.Body)
-// 		fmt.Fprintf(w, "Data: \n %v\n\n", string(data))
-// 	}
-// }
+func callServer(w http.ResponseWriter, serverName string) {
+	fmt.Fprintf(w, " \nCalling : %v\n", serverName)
+	response, err := http.Get(serverName)
+	if err != nil {
+		fmt.Fprintf(w, " \nThe HTTP request failed with error %s\n", err)
+	} else {
+		data, _ := ioutil.ReadAll(response.Body)
+		fmt.Fprintf(w, " \nData: \n %v\n\n", string(data))
+	}
+}
 
 func callServerWithAuth(w http.ResponseWriter, serverName string) {
-	fmt.Fprintf(w, "Calling : %v\n", serverName)
+	fmt.Fprintf(w, " \nCalling : %v\n", serverName)
 	tokenURL := fmt.Sprintf("/instance/service-accounts/default/identity?audience=%s", serverName)
-	fmt.Fprintf(w, "Getting token : %v\n", tokenURL)
+	fmt.Fprintf(w, " \nGetting token : %v\n", tokenURL)
 
 	idToken, err := metadata.Get(tokenURL)
 	if err != nil {
-		fmt.Fprintf(w, "metadata.Get: failed to query id_token: %+v", err)
+		fmt.Fprintf(w, " \nmetadata.Get: failed to query id_token: %+v  \n", err)
 		return
 	}
 
 	req, err := http.NewRequest("GET", serverName, nil)
 	if err != nil {
-		fmt.Fprintf(w, "Error creating new request: %+v", err)
+		fmt.Fprintf(w, " \nError creating new request: %+v  \n", err)
 		return
 	}
 
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", idToken))
-	fmt.Fprintf(w, "Got id token: Bearer %s", idToken)
+	fmt.Fprintf(w, " \nGot id token of length %v \n", len(idToken))
 	response, err := http.DefaultClient.Do(req)
 	if err != nil {
 		fmt.Fprintf(w, "The HTTP request failed with error %s\n", err)
 	} else {
 		data, _ := ioutil.ReadAll(response.Body)
-		fmt.Fprintf(w, "Data: \n %v\n\n", string(data))
+		fmt.Fprintf(w, " \nData: \n %v\n\n", string(data))
 	}
 }
