@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	"cloud.google.com/go/compute/metadata"
 )
 
 func main() {
@@ -36,13 +38,39 @@ func HelloWorldServer(w http.ResponseWriter, r *http.Request) {
 		worldserver = "http://world-app:8080"
 	}
 
-	callServer(w, helloserver)
+	callServerWithAuth(w, helloserver)
 	callServer(w, worldserver)
 }
 
 func callServer(w http.ResponseWriter, serverName string) {
 	fmt.Fprintf(w, "Calling : %v\n", serverName)
 	response, err := http.Get(serverName)
+	if err != nil {
+		fmt.Fprintf(w, "The HTTP request failed with error %s\n", err)
+	} else {
+		data, _ := ioutil.ReadAll(response.Body)
+		fmt.Fprintf(w, "Data: \n %v\n\n", string(data))
+	}
+}
+
+func callServerWithAuth(w http.ResponseWriter, serverName string) {
+	fmt.Fprintf(w, "Calling : %v\n", serverName)
+	tokenURL := fmt.Sprintf("/instance/service-accounts/default/identity?audience=%s", serverName)
+	fmt.Fprintf(w, "Getting token : %v\n", tokenURL)
+
+	idToken, err := metadata.Get(tokenURL)
+	if err != nil {
+		fmt.Fprintf(w, "metadata.Get: failed to query id_token: %+v", err)
+		return
+	}
+	req, err := http.NewRequest("GET", serverName, nil)
+	if err != nil {
+		fmt.Fprintf(w, "Error creating new request: %+v", err)
+		return
+	}
+
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", idToken))
+	response, err := http.DefaultClient.Do(req)
 	if err != nil {
 		fmt.Fprintf(w, "The HTTP request failed with error %s\n", err)
 	} else {
